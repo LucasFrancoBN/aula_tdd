@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class MensagemRepositoryTest {
@@ -35,11 +36,7 @@ public class MensagemRepositoryTest {
   @Test
   void devePermitirRegistrarMensagem() {
     // Arrange
-    var mensagem = Mensagem.builder()
-        .id(UUID.randomUUID())
-        .usuario("Jose")
-        .conteudo("Conteúdo da mensagem")
-        .build();
+    var mensagem = gerarMensagem();
 
     // Define o comportamento do mock
     when(mensagemRepository.save(any(Mensagem.class))).thenReturn(mensagem);
@@ -57,23 +54,70 @@ public class MensagemRepositoryTest {
   }
 
   @Test
-  void devePermitirAlterarMensagem() {
-    fail("Teste não implementado");
+  void devePermitirExcluirMensagem() {
+    // Arrange
+    var id = UUID.randomUUID();
+    doNothing().when(mensagemRepository).deleteById(any(UUID.class));
+
+    // Act
+    mensagemRepository.deleteById(id);
+
+    // Assert
+    verify(mensagemRepository, times(1)).deleteById(id);
   }
 
   @Test
-  void devePermitirExcluirMensagem() {
-    fail("Teste não implementado");
+  void devePermitirListarMensagens() {
+    // Arrange
+    var mensagem1 = gerarMensagem();
+    var mensagem2 = gerarMensagem();
+
+    var listaMensagens = Arrays.asList(mensagem1, mensagem2);
+
+    when(mensagemRepository.findAll()).thenReturn(listaMensagens);
+
+    // Act
+    var mensagensRecebidas = mensagemRepository.findAll();
+
+    // Assert
+    assertThat(mensagensRecebidas)
+        .hasSize(2)
+        .containsExactlyInAnyOrder(mensagem1, mensagem2);
+
+    verify(mensagemRepository, times(1)).findAll();
   }
 
   @Test
   void devePermitirBuscarMensagem() {
-    fail("Teste não implementado");
+    // Arrange
+    var id = UUID.randomUUID();
+    var mensagem = gerarMensagem();
+    mensagem.setId(id);
+
+    when(mensagemRepository.findById(any(UUID.class)))
+        .thenReturn(Optional.of(mensagem));
+
+    // Act
+    var mensagemRecebidaOpcional = mensagemRepository.findById(id);
+
+    // Assert
+    assertThat(mensagemRecebidaOpcional)
+        .isPresent()
+        .containsSame(mensagem);
+
+    mensagemRecebidaOpcional.ifPresent(mensagemRecebida -> {
+      assertThat(mensagemRecebida.getId()).isEqualTo(mensagem.getId());
+      assertThat(mensagemRecebida.getConteudo()).isEqualTo(mensagem.getConteudo());
+    });
+
+    verify(mensagemRepository, times(1)).findById(any(UUID.class));
   }
 
-  @Test
-  void devePermitirListarMensagem() {
-    fail("Teste não implementado");
+  private Mensagem gerarMensagem() {
+    return Mensagem.builder()
+        .usuario("Jose")
+        .conteudo("Conteúdo da mensagem")
+        .build();
   }
 
 }

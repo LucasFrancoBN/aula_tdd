@@ -7,6 +7,10 @@ spring:
   jpa:
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
+    # Utilizar apenas em dev
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
   h2:
     console:
       enabled: true

@@ -3,6 +3,7 @@ package br.com.fiap.repository;
 import br.com.fiap.api.RestApiApplication;
 import br.com.fiap.api.model.Mensagem;
 import br.com.fiap.api.repository.MensagemRepository;
+import br.com.fiap.utils.MensagemHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +18,21 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = RestApiApplication.class)
 @AutoConfigureTestDatabase
 @Transactional
-public class MensagemRepositoryIT {
+class MensagemRepositoryIT {
   @Autowired
   private MensagemRepository mensagemRepository;
 
   @Test
   void devePermitirCriarTabela() {
     var totalDeRegistros = mensagemRepository.count();
-    assertThat(totalDeRegistros).isGreaterThan(0);
+    assertThat(totalDeRegistros).isPositive();
   }
 
   @Test
   void devePermitirRegistrarMensagem() {
     // Arrange
     var id = UUID.randomUUID();
-    var mensagem = this.gerarMensagem();
+    var mensagem = MensagemHelper.gerarMensagem();
     mensagem.setId(id);
 
     // Act
@@ -86,16 +87,5 @@ public class MensagemRepositoryIT {
 
     // Assert
     assertThat(mensagemRemovida).isEmpty();
-  }
-
-  private Mensagem registrarMensagem(Mensagem mensagem) {
-    return mensagemRepository.save(mensagem);
-  }
-
-  private Mensagem gerarMensagem() {
-    return Mensagem.builder()
-        .usuario("Jose")
-        .conteudo("Conteúdo da mensagem")
-        .build();
   }
 }

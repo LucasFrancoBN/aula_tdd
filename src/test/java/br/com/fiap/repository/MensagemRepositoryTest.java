@@ -3,7 +3,7 @@ package br.com.fiap.repository;
 
 import br.com.fiap.api.model.Mensagem;
 import br.com.fiap.api.repository.MensagemRepository;
-import org.junit.jupiter.api.AfterAll;
+import br.com.fiap.utils.MensagemHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class MensagemRepositoryTest {
+class MensagemRepositoryTest {
   @Mock
   private MensagemRepository mensagemRepository;
 
@@ -36,7 +36,7 @@ public class MensagemRepositoryTest {
   @Test
   void devePermitirRegistrarMensagem() {
     // Arrange
-    var mensagem = gerarMensagem();
+    var mensagem = MensagemHelper.gerarMensagem();
 
     // Define o comportamento do mock
     when(mensagemRepository.save(any(Mensagem.class))).thenReturn(mensagem);
@@ -69,8 +69,8 @@ public class MensagemRepositoryTest {
   @Test
   void devePermitirListarMensagens() {
     // Arrange
-    var mensagem1 = gerarMensagem();
-    var mensagem2 = gerarMensagem();
+    var mensagem1 = MensagemHelper.gerarMensagem();
+    var mensagem2 = MensagemHelper.gerarMensagem();
 
     var listaMensagens = Arrays.asList(mensagem1, mensagem2);
 
@@ -91,7 +91,7 @@ public class MensagemRepositoryTest {
   void devePermitirBuscarMensagem() {
     // Arrange
     var id = UUID.randomUUID();
-    var mensagem = gerarMensagem();
+    var mensagem = MensagemHelper.gerarMensagem();
     mensagem.setId(id);
 
     when(mensagemRepository.findById(any(UUID.class)))
@@ -111,13 +111,6 @@ public class MensagemRepositoryTest {
     });
 
     verify(mensagemRepository, times(1)).findById(any(UUID.class));
-  }
-
-  private Mensagem gerarMensagem() {
-    return Mensagem.builder()
-        .usuario("Jose")
-        .conteudo("Conteúdo da mensagem")
-        .build();
   }
 
 }

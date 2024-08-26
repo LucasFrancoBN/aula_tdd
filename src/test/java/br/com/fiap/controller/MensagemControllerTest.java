@@ -13,18 +13,23 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+
+import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class MensagemControllerTest {
   private MockMvc mockMvc;
@@ -134,7 +139,7 @@ public class MensagemControllerTest {
     }
 
     @Test
-    void deveGerarExcecao_QuandoAlterarMensagem_PayloadXML() throws Exception {
+    void deveGerarExcecao_QuandoAlterarMensagem_ApresentaPayloadXML() throws Exception {
       var id = UUID.fromString("ccd734df-8a0f-480f-83de-638c18d972a3");
       String xmlPayload = "<mensagem><id>" + id + "</id><usuario>Ana</usuario><conteudo>Mensagem do Conteudo</conteudo></mensagem>";
 
@@ -151,7 +156,7 @@ public class MensagemControllerTest {
     void deveGerarExcecao_QuandoAlterarMensagem_IdNaoExiste() throws Exception {
       var id = UUID.fromString("ccd734df-8a0f-480f-83de-638c18d972a3");
       var mensagem = MensagemHelper.gerarMensagem();
-      var conteudoDaExcecao = "mensagem atualiza não apresenta ID correto";
+      var conteudoDaExcecao = "Mensagem não encontrada";
       mensagem.setId(id);
 
       when(mensagemService.alterarMensagem(id, mensagem))
@@ -167,33 +172,81 @@ public class MensagemControllerTest {
 
       verify(mensagemService, times(1))
           .alterarMensagem(any(UUID.class), any(Mensagem.class));
-
     }
 
     @Test
-    void deveGerarExcecao_QuandoAlterarMensagem_IdDaMensagemNovaApresentaValorDiferente() {
-      fail("Teste não implementado");
+    void deveGerarExcecao_QuandoAlterarMensagem_IdDaMensagemNovaApresentaValorDiferente() throws Exception {
+      var id = UUID.fromString("ccd734df-8a0f-480f-83de-638c18d972a3");
+      var mensagem = MensagemHelper.gerarMensagem();
+      var conteudoDaExcecao = "mensagem atualiza não apresenta ID correto";
+      mensagem.setId(UUID.fromString("21eb6b14-0cdb-4890-b5fd-18c799388b83"));
+
+      when(mensagemService.alterarMensagem(id, mensagem))
+              .thenThrow(new MensagemNotFoundException(conteudoDaExcecao));
+
+      mockMvc.perform(
+                      put("/mensagens/{id}", id)
+                              .contentType(MediaType.APPLICATION_JSON)
+                              .content(asJsonString(mensagem)))
+              // .andDo(print())
+              .andExpect(status().isNotFound())
+              .andExpect(content().string(conteudoDaExcecao));
+
+      verify(mensagemService, times(1))
+              .alterarMensagem(any(UUID.class), any(Mensagem.class));
     }
   }
 
   @Nested
   class RemoverMensagem {
     @Test
-    void devePermitirRemoverMensagem() {
-      fail("Teste não implementado");
+    void devePermitirRemoverMensagem() throws Exception {
+      var id = UUID.fromString("027e009f-0236-4a1a-ab89-72f99adc65f5");
+
+      when(mensagemService.removerMensagem(id)).thenReturn(true);
+
+      mockMvc.perform(delete("/mensagens/{id}", id))
+              .andExpect((status().isOk()))
+              .andExpect(content().string("Mensagem removida"));
+
+      verify(mensagemService, times(1)).removerMensagem(id);
     }
 
     @Test
-    void deveGerarExcecao_QuandoRemoverMensagem_IdNaoExiste() {
-      fail("Teste não implementado");
+    void deveGerarExcecao_QuandoRemoverMensagem_IdNaoExiste() throws Exception {
+      var id = UUID.fromString("027e009f-0236-4a1a-ab89-72f99adc65f5");
+      var mensagemDaExcecao = "Mensagem não encontrada";
+
+      when(mensagemService.removerMensagem(id))
+              .thenThrow(new MensagemNotFoundException(mensagemDaExcecao));
+
+      mockMvc.perform(delete("/mensagens/{id}", id))
+              .andExpect(status().isNotFound())
+              .andExpect(content().string(mensagemDaExcecao));
+
+      verify(mensagemService, times(1)).removerMensagem(id);
     }
   }
 
   @Nested
   class ListarMensagens {
     @Test
-    void devePermitirListarMensagens() {
-      fail("Teste não implementado");
+    void devePermitirListarMensagens() throws Exception {
+      var mensagens = MensagemHelper.gerarMensagem();
+      var page = new PageImpl<>(Collections.singletonList(mensagens));
+
+      when(mensagemService.listarMensagens(any(Pageable.class)))
+              .thenReturn(page);
+
+      mockMvc.perform(
+              get("/mensagens")
+                      .param("page", "0")
+                      .param("size", "10"))
+              .andDo(print())
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.content", not(empty())))
+              .andExpect(jsonPath("$.totalPages").value(1))
+              .andExpect(jsonPath("$.totalElements").value(1));
 
     }
   }

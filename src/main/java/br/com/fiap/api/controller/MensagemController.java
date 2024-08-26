@@ -5,11 +5,14 @@ import br.com.fiap.api.model.Mensagem;
 import br.com.fiap.api.service.MensagemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.util.UUID;
 
 @RestController
@@ -52,5 +55,29 @@ public class MensagemController {
         } catch (MensagemNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removerMensagem(@PathVariable String id) {
+        try {
+            var uuid = UUID.fromString(id);
+            mensagemService.removerMensagem(uuid);
+            return new ResponseEntity<>("Mensagem removida", HttpStatus.OK);
+        } catch (MensagemNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Page<Mensagem>> listarMensagens(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        var pageable = PageRequest.of(page, size);
+        var mensagens = mensagemService.listarMensagens(pageable);
+
+        return new ResponseEntity<>(mensagens, HttpStatus.OK);
     }
 }

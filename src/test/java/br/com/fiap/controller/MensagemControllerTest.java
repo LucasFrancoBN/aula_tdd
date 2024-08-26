@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -100,7 +101,8 @@ public class MensagemControllerTest {
           .thenReturn(mensagem);
 
       mockMvc.perform(get("/mensagens/{id}", id))
-          .andExpect(status().isOk());
+          .andExpect(status().isOk())
+          .andDo(print());
       verify(mensagemService, times(1)).buscarMensagem(any(UUID.class));
     }
 
@@ -188,7 +190,7 @@ public class MensagemControllerTest {
                       put("/mensagens/{id}", id)
                               .contentType(MediaType.APPLICATION_JSON)
                               .content(asJsonString(mensagem)))
-              // .andDo(print())
+              .andDo(print())
               .andExpect(status().isNotFound())
               .andExpect(content().string(conteudoDaExcecao));
 
@@ -232,21 +234,23 @@ public class MensagemControllerTest {
   class ListarMensagens {
     @Test
     void devePermitirListarMensagens() throws Exception {
-      var mensagens = MensagemHelper.gerarMensagem();
-      var page = new PageImpl<>(Collections.singletonList(mensagens));
+      var mensagem = MensagemHelper.gerarMensagem();
+      var pageable = PageRequest.of(0, 10);
+      var page = new PageImpl<>(Collections.singletonList(mensagem), pageable, 1);
 
       when(mensagemService.listarMensagens(any(Pageable.class)))
               .thenReturn(page);
 
       mockMvc.perform(
               get("/mensagens")
-                      .param("page", "0")
-                      .param("size", "10"))
-              .andDo(print())
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$.content", not(empty())))
-              .andExpect(jsonPath("$.totalPages").value(1))
-              .andExpect(jsonPath("$.totalElements").value(1));
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .param("page", "0")
+                  .param("size", "10"))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content", not(empty())))
+          .andExpect(jsonPath("$.totalPages").value(1))
+          .andExpect(jsonPath("$.totalElements").value(1));
 
     }
   }

@@ -69,6 +69,7 @@ public class MensagemController {
     }
 
     @GetMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Page<Mensagem>> listarMensagens(

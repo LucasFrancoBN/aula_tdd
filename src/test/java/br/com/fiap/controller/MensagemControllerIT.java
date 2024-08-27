@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -49,6 +50,7 @@ public class MensagemControllerIT {
       // então
       .then()
           .statusCode(HttpStatus.CREATED.value())
+          .body(matchesJsonSchemaInClasspath("schmeas/mensagem.schema.json"))
           .log().all();
 
     }
@@ -68,10 +70,7 @@ public class MensagemControllerIT {
           // então
       .then()
           .statusCode(HttpStatus.BAD_REQUEST.value())
-          .body("$", hasKey("timestamp"))
-          .body("$", hasKey("status"))
-          .body("$", hasKey("path"))
-          .body("$", hasKey("error"))
+          .body(matchesJsonSchemaInClasspath("schmeas/error.schema.json"))
           .body("error", equalTo("Bad Request"))
           .body("path", equalTo("/mensagens"))
           .log().all();

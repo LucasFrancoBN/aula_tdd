@@ -1,6 +1,7 @@
 package br.com.fiap.controller;
 
 import br.com.fiap.api.RestApiApplication;
+import br.com.fiap.api.model.Mensagem;
 import br.com.fiap.utils.MensagemHelper;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -50,7 +53,7 @@ public class MensagemControllerIT {
       // então
       .then()
           .statusCode(HttpStatus.CREATED.value())
-          .body(matchesJsonSchemaInClasspath("schmeas/mensagem.schema.json"))
+          .body(matchesJsonSchemaInClasspath("schemas/mensagem.schema.json"))
           .log().all();
 
     }
@@ -70,7 +73,7 @@ public class MensagemControllerIT {
           // então
       .then()
           .statusCode(HttpStatus.BAD_REQUEST.value())
-          .body(matchesJsonSchemaInClasspath("schmeas/error.schema.json"))
+          .body(matchesJsonSchemaInClasspath("schemas/error.schema.json"))
           .body("error", equalTo("Bad Request"))
           .body("path", equalTo("/mensagens"))
           .log().all();
@@ -112,7 +115,23 @@ public class MensagemControllerIT {
   class AlterarMensagem {
     @Test
     void devePermitirAlterarMensagem() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7dc1766e-1c80-448d-b798-0ad57400dfbc");
+      var mensagem = Mensagem.builder()
+              .id(id)
+              .usuario("John")
+              .conteudo("Conteudo da mensagem 03")
+              .build();
+
+      given()
+              .contentType("application/json")
+              .body(mensagem)
+      .when()
+              .put("/mensagens/{id}", id)
+      .then()
+              .statusCode(HttpStatus.ACCEPTED.value())
+              .body(matchesJsonSchemaInClasspath("schemas/mensagem.schema.json"))
+              .log().all();
+
     }
 
     @Test

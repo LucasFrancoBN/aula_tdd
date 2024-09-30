@@ -1,10 +1,10 @@
-package br.com.fiap.controller;
+package br.com.fiap.api.controller;
 
-import br.com.fiap.api.controller.MensagemController;
-import br.com.fiap.api.exception.MensagemNotFoundException;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.service.MensagemService;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.controller.MensagemController;
+import br.com.fiap.api.api.exception.MensagemNotFoundException;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.service.MensagemService;
+import br.com.fiap.api.utils.MensagemHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterEach;

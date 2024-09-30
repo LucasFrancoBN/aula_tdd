@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "properties": {
+    "totalElements": {
+      "type": "integer",
+      "default": 0
+    },
+    "totalPages": {
+      "type": "integer",
+      "default": 0
+    },
+    "size": {
+      "type": "integer",
+      "default": 0
+    },
+    "content": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "usuario": {
+            "type": "string"
+          },
+          "conteudo": {
+            "type": "string"
+          },
+          "dataCriacao": {
+            "type": "string"
+          },
+          "gostei": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "number": {
+      "type": "integer",
+      "default": 0
+    },
+    "sort": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "empty": {
+          "type": "boolean",
+          "default": false
+        },
+        "sorted": {
+          "type": "boolean",
+          "default": false
+        },
+        "unsorted": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "first": {
+      "type": "boolean",
+      "default": false
+    },
+    "last": {
+      "type": "boolean",
+      "default": false
+    },
+    "numberOfElements": {
+      "type": "integer",
+      "default": 0
+    },
+    "pageable": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "pageNumber": {
+          "type": "integer",
+          "default": 0
+        },
+        "pageSize": {
+          "type": "integer",
+          "default": 0
+        },
+        "sort": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "empty": {
+              "type": "boolean",
+              "default": false
+            },
+            "sorted": {
+              "type": "boolean",
+              "default": false
+            },
+            "unsorted": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "offset": {
+          "type": "integer",
+          "default": 0
+        },
+        "paged": {
+          "type": "boolean",
+          "default": false
+        },
+        "unpaged": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "empty": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

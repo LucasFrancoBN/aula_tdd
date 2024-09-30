@@ -1,8 +1,8 @@
-package br.com.fiap.api.service;
+package br.com.fiap.api.api.service;
 
-import br.com.fiap.api.exception.MensagemNotFoundException;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.repository.MensagemRepository;
+import br.com.fiap.api.api.exception.MensagemNotFoundException;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.repository.MensagemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

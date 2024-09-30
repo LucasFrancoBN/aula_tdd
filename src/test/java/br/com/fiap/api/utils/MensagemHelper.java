@@ -1,6 +1,6 @@
-package br.com.fiap.utils;
+package br.com.fiap.api.utils;
 
-import br.com.fiap.api.model.Mensagem;
+import br.com.fiap.api.api.model.Mensagem;
 
 public abstract  class MensagemHelper {
   public static Mensagem gerarMensagem() {

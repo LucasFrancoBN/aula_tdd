@@ -1,4 +1,4 @@
-package br.com.fiap.api.model;
+package br.com.fiap.api.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package br.com.fiap.api.config;
+package br.com.fiap.api.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

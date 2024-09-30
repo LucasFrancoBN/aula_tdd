@@ -1,8 +1,9 @@
-package br.com.fiap.controller;
+package br.com.fiap.api.controller;
 
-import br.com.fiap.api.RestApiApplication;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.RestApiApplication;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.utils.MensagemHelper;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -11,14 +12,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
     classes = RestApiApplication.class
 )
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class MensagemControllerIT {
   @LocalServerPort
   private int port;
@@ -44,6 +46,7 @@ public class MensagemControllerIT {
 
       // Pré condições
       given()
+          .filter(new AllureRestAssured())
           .contentType("application/json")
           .body(mensagem)
           .log().all()
@@ -64,6 +67,7 @@ public class MensagemControllerIT {
 
       // Pré condições
       given()
+          .filter(new AllureRestAssured())
           .contentType("application/json")
           .body(xmlPayload)
           .log().all()
@@ -123,6 +127,7 @@ public class MensagemControllerIT {
               .build();
 
       given()
+              .filter(new AllureRestAssured())
               .contentType("application/json")
               .body(mensagem)
       .when()
@@ -136,17 +141,63 @@ public class MensagemControllerIT {
 
     @Test
     void deveGerarExcecao_QuandoAlterarMensagem_ApresentaPayloadXML() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7dc1766e-1c80-448d-b798-0ad57400dfbc");
+      String xmlPayload = "<mensagem>" + id + "<usuario>John</usuario><conteudo>Conteudo da mensagem 03</conteudo></mensagem>";
+
+      given()
+          .filter(new AllureRestAssured())
+          .contentType("application/json")
+          .body(xmlPayload)
+      .when()
+          .put("/mensagens/{id}", id)
+      .then()
+          .statusCode(HttpStatus.BAD_REQUEST.value())
+          .log().all()
+          .body(matchesJsonSchemaInClasspath("schemas/error.schema.json"))
+          .body("error", equalTo("Bad Request"))
+          .body("path", containsString("/mensagens/"))
+          .body("path", equalTo("/mensagens/7dc1766e-1c80-448d-b798-0ad57400dfbc"));
+
     }
 
     @Test
     void deveGerarExcecao_QuandoAlterarMensagem_IdNaoExiste() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7dc1766e-1c80-448d-b798-0ad57400dfba");
+      var mensagem = Mensagem.builder()
+          .id(id)
+          .usuario("John")
+          .conteudo("Conteudo da mensagem 03")
+          .build();
+
+      given()
+          .contentType("application/json")
+          .body(mensagem)
+          .when()
+          .put("/mensagens/{id}", id)
+          .then()
+          .statusCode(HttpStatus.NOT_FOUND.value())
+          .log().all()
+          .body(equalTo("Mensagem não encontrada"));
     }
 
     @Test
     void deveGerarExcecao_QuandoAlterarMensagem_IdDaMensagemNovaApresentaValorDiferente() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7dc1766e-1c80-448d-b798-0ad57400dfbc");
+      var mensagem = Mensagem.builder()
+          .id(UUID.fromString("7dc1766e-1c80-448d-b798-0ad57400dfba"))
+          .usuario("John")
+          .conteudo("Conteudo da mensagem 03")
+          .build();
+
+      given()
+          .contentType("application/json")
+          .body(mensagem)
+      .when()
+          .put("/mensagens/{id}", id)
+      .then()
+          .statusCode(HttpStatus.NOT_FOUND.value())
+          .log().all()
+          .body(equalTo("mensagem atualiza não apresenta ID correto"));
     }
   }
 
@@ -154,12 +205,25 @@ public class MensagemControllerIT {
   class RemoverMensagem {
     @Test
     void devePermitirRemoverMensagem() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7e158e54-2baa-4e96-9519-c6278c62ea91");
+
+        when()
+          .delete("/mensagens/{id}", id)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value());
     }
 
     @Test
     void deveGerarExcecao_QuandoRemoverMensagem_IdNaoExiste() {
-      fail("Teste não implementado");
+      var id = UUID.fromString("7e158e54-2baa-4e96-9519-c6278c62ea9a");
+
+      when()
+        .delete("/mensagens/{id}", id)
+      .then()
+        .log().all()
+        .statusCode(HttpStatus.NOT_FOUND.value())
+        .body(equalTo("Mensagem não encontrada"));
     }
   }
 
@@ -167,7 +231,27 @@ public class MensagemControllerIT {
   class ListarMensagem {
     @Test
     void devePermitirListarMensagens() {
-      fail("Teste não implementado");
+      given()
+          .queryParam("page", "0")
+          .queryParam("size", "10")
+      .when()
+          .get("/mensagens")
+      .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body(matchesJsonSchemaInClasspath("schemas/mensagem.page.schema.json"));
+    }
+
+    @Test
+    void devePermitirListarMensagem_QuandoNaoInformadoPagainacao() {
+      when()
+          .get("/mensagens")
+      .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body(matchesJsonSchemaInClasspath("schemas/mensagem.page.schema.json"));
+
+
     }
   }
 }

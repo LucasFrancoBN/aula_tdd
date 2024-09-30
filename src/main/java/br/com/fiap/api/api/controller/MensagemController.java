@@ -1,8 +1,8 @@
-package br.com.fiap.api.controller;
+package br.com.fiap.api.api.controller;
 
-import br.com.fiap.api.exception.MensagemNotFoundException;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.service.MensagemService;
+import br.com.fiap.api.api.exception.MensagemNotFoundException;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.service.MensagemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
 import java.util.UUID;
 
 @RestController
@@ -69,7 +68,6 @@ public class MensagemController {
     }
 
     @GetMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Page<Mensagem>> listarMensagens(

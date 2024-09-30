@@ -1,12 +1,13 @@
-package br.com.fiap.service;
+package br.com.fiap.api.service;
 
-import br.com.fiap.api.exception.MensagemNotFoundException;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.repository.MensagemRepository;
-import br.com.fiap.api.service.MensagemService;
-import br.com.fiap.api.service.MensagemServiceImpl;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.exception.MensagemNotFoundException;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.repository.MensagemRepository;
+import br.com.fiap.api.api.service.MensagemService;
+import br.com.fiap.api.api.service.MensagemServiceImpl;
+import br.com.fiap.api.utils.MensagemHelper;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,13 +57,13 @@ class MensagemServiceTest {
         var mensagemRegistrada = mensagemService.registrarMensagem(mensagem);
 
         // Assert
-        assertThat(mensagemRegistrada)
+        AssertionsForClassTypes.assertThat(mensagemRegistrada)
                 .isInstanceOf(Mensagem.class)
                 .isNotNull();
 
-        assertThat(mensagemRegistrada.getConteudo()).isEqualTo(mensagem.getConteudo());
-        assertThat(mensagemRegistrada.getUsuario()).isEqualTo(mensagem.getUsuario());
-        assertThat(mensagem.getId()).isNotNull();
+        AssertionsForClassTypes.assertThat(mensagemRegistrada.getConteudo()).isEqualTo(mensagem.getConteudo());
+        AssertionsForClassTypes.assertThat(mensagemRegistrada.getUsuario()).isEqualTo(mensagem.getUsuario());
+        AssertionsForClassTypes.assertThat(mensagem.getId()).isNotNull();
 
         verify(mensagemRepository, times(1)).save(any(Mensagem.class));
     }
@@ -81,7 +82,7 @@ class MensagemServiceTest {
         var mensagemObtido = mensagemService.buscarMensagem(id);
 
         // Assert
-        assertThat(mensagemObtido).isEqualTo(mensagem);
+        AssertionsForClassTypes.assertThat(mensagemObtido).isEqualTo(mensagem);
 
         verify(mensagemRepository, times(1)).findById(any(UUID.class));
     }
@@ -124,11 +125,11 @@ class MensagemServiceTest {
         var mensagemObtida = mensagemService.alterarMensagem(id, mensagemNova);
 
         // Assert
-        assertThat(mensagemObtida).isNotNull().isInstanceOf(Mensagem.class);
-        assertThat(mensagemObtida.getId()).isEqualTo(mensagemNova.getId());
-        assertThat(mensagemObtida.getConteudo()).isEqualTo(mensagemNova.getConteudo());
-        assertThat(mensagemObtida.getConteudo()).isEqualTo(mensagemNova.getConteudo());
-        assertThat(mensagemObtida.getUsuario()).isEqualTo(mensagemNova.getUsuario());
+        AssertionsForClassTypes.assertThat(mensagemObtida).isNotNull().isInstanceOf(Mensagem.class);
+        AssertionsForClassTypes.assertThat(mensagemObtida.getId()).isEqualTo(mensagemNova.getId());
+        AssertionsForClassTypes.assertThat(mensagemObtida.getConteudo()).isEqualTo(mensagemNova.getConteudo());
+        AssertionsForClassTypes.assertThat(mensagemObtida.getConteudo()).isEqualTo(mensagemNova.getConteudo());
+        AssertionsForClassTypes.assertThat(mensagemObtida.getUsuario()).isEqualTo(mensagemNova.getUsuario());
 
         verify(mensagemRepository, times(1)).findById(any(UUID.class));
         verify(mensagemRepository, times(1)).save(any(Mensagem.class));
@@ -230,7 +231,7 @@ class MensagemServiceTest {
       Assertions.assertThat(resultadoObtido).hasSize(2);
       Assertions.assertThat(resultadoObtido.getContent())
           .allSatisfy(mensagem -> {
-            assertThat(mensagem)
+            AssertionsForClassTypes.assertThat(mensagem)
                 .isNotNull()
                 .isInstanceOf(Mensagem.class);
           });

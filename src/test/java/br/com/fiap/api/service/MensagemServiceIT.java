@@ -1,11 +1,10 @@
-package br.com.fiap.service;
+package br.com.fiap.api.service;
 
-import br.com.fiap.api.RestApiApplication;
-import br.com.fiap.api.exception.MensagemNotFoundException;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.repository.MensagemRepository;
-import br.com.fiap.api.service.MensagemService;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.RestApiApplication;
+import br.com.fiap.api.api.service.MensagemService;
+import br.com.fiap.api.api.exception.MensagemNotFoundException;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.utils.MensagemHelper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -23,9 +23,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(classes = RestApiApplication.class)
 @AutoConfigureTestDatabase
 @Transactional
+@ActiveProfiles("test")
 class MensagemServiceIT {
-  @Autowired
-  private MensagemRepository mensagemRepository;
   @Autowired
   private MensagemService mensagemService;
 

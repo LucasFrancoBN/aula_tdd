@@ -1,9 +1,9 @@
-package br.com.fiap.repository;
+package br.com.fiap.api.repository;
 
 
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.repository.MensagemRepository;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.repository.MensagemRepository;
+import br.com.fiap.api.utils.MensagemHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

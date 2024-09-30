@@ -1,14 +1,15 @@
-package br.com.fiap.repository;
+package br.com.fiap.api.repository;
 
-import br.com.fiap.api.RestApiApplication;
-import br.com.fiap.api.model.Mensagem;
-import br.com.fiap.api.repository.MensagemRepository;
-import br.com.fiap.utils.MensagemHelper;
+import br.com.fiap.api.api.RestApiApplication;
+import br.com.fiap.api.api.model.Mensagem;
+import br.com.fiap.api.api.repository.MensagemRepository;
+import br.com.fiap.api.utils.MensagemHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = RestApiApplication.class)
 @AutoConfigureTestDatabase
 @Transactional
+@ActiveProfiles("test")
 class MensagemRepositoryIT {
   @Autowired
   private MensagemRepository mensagemRepository;
